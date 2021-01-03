@@ -49,12 +49,13 @@ class App extends Component{
     return (
       <div className="App">
         <header className="App-header">
-          <textarea value={this.state.value} onChange={this.handleChange} className="form-control" rows="10" cols="80"></textarea>
+          <textarea value={this.state.value} onChange={this.handleChange} className="form-control" rows="30" cols="120"></textarea>
           <button onClick={this.run}>
             run!!
           </button>
           <div>
-            結果：{this.state.test}
+            ---Console---<br/>
+            {this.state.test}
           </div>
         </header>
       </div>
