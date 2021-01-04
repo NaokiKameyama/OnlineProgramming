@@ -1,42 +1,29 @@
 import React, { Component} from 'react';
 import './App.css';
 import axios from "axios";
-
+import MonacoEditor from 'react-monaco-editor';
 
 class App extends Component{
   constructor(props) {
     super(props);
     this.state = {
-      value: 'Please write an essay about your favorite DOM element.',
-      test: ''
+      code: ''
     };
-    this.handleChange = this.handleChange.bind(this);
-    this.handleSubmit = this.handleSubmit.bind(this);
     this.run = this.run.bind(this);
+    this.onChange = this.onChange.bind(this);
   }
 
-  handleChange(event) {
-    this.setState({value: event.target.value});
+  editorDidMount(editor, monaco) {
+    console.log('editorDidMount', editor);
+    editor.focus();
   }
 
-  handleSubmit(event) {
-    alert('A name was submitted: ' + this.state.value);
-    event.preventDefault();
+  onChange(value) {
+    this.setState({code: value});
   }
 
   run(){
-    console.log(this.state.value)
-    // const code = {
-    //   code: "package main\nimport \"fmt\"\nfunc main() {\nfmt.Printf(\"Hello Nammmmmmmmmmm\")\n}"
-    // };
-    const code = {
-      code: this.state.value
-    };
-
-    // let codeFromEditor = this.state.value
-    // console.log(codeFromEditor)
-
-    axios.post('http://localhost:5000/run', code)
+    axios.post('http://localhost:5000/run', {code: this.state.code})
       .then(res => {
         console.log(res.data.stdout);
         console.log(res.data.stderr);
@@ -46,15 +33,31 @@ class App extends Component{
   }
 
   render() {
+    const code = this.state.code;
+    const options = {
+      selectOnLineNumbers: true,
+      roundedSelection: false,
+      readOnly: false,
+      cursorStyle: "line",
+      automaticLayout: false,
+    };
     return (
       <div className="App">
         <header className="App-header">
-          <textarea value={this.state.value} onChange={this.handleChange} className="form-control" rows="30" cols="120"></textarea>
+          <MonacoEditor
+            width="800"
+            height="600"
+            language="go"
+            theme="vs-dark"
+            value={code}
+            options={options}
+            onChange={this.onChange}
+            editorDidMount={this.editorDidMount}
+          />
           <button onClick={this.run}>
             run!!
           </button>
-          <div>
-            ---Console---<br/>
+          <div className="console">
             {this.state.test}
           </div>
         </header>
