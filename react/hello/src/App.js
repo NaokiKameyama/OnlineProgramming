@@ -1,7 +1,6 @@
 import React, { Component} from 'react';
 import './App.css';
 import axios from "axios";
-// import MonacoEditor from 'react-monaco-editor';
 import AceEditor from "react-ace";
 import "ace-builds/src-noconflict/mode-golang";
 import "ace-builds/src-noconflict/theme-monokai";
@@ -11,7 +10,8 @@ class App extends Component{
   constructor(props) {
     super(props);
     this.state = {
-      value: 'vvv',
+      output: '',
+      value: '',
       code: ''
     };
     this.run = this.run.bind(this);
@@ -19,32 +19,20 @@ class App extends Component{
     this.onChange = this.onChange.bind(this);
   }
 
-  editorDidMount(editor, monaco) {
-    console.log('editorDidMount', editor);
-    editor.focus();
-  }
-
   onChange(value) {
     this.setState({code: value});
   }
 
-  run(){
-    axios.post('http://localhost:5000/run', {code: this.state.code})
-      .then(res => {
-        console.log(res.data.stdout);
-        console.log(res.data.stderr);
-        this.stdout = res.data.stdout + res.data.stderr
-        // const sample_str = this.stdout.replace(/\r?\n/g, '<br/>')
-        this.setState({test: this.stdout});
-      })
+  async run(){
+    const { data: { stdout, stderr } } = await axios.post('http://localhost:5000/run', {code: this.state.code})
+    this.setState({output: stdout + stderr});
   }
 
-  getAnswer(){
-    axios.get('http://localhost:5000/get_answer')
-    .then(res => {
-      console.log(res.data.question)
-      this.setState({value: res.data.question});
+  async getAnswer(){
+    const { data: { question } } = await axios.get('http://localhost:5000/get_answer', { 
+      params:{lessun_id:16} 
     })
+    console.log(question)
   }
 
   render() {
@@ -76,7 +64,7 @@ class App extends Component{
           </Button>
           <div className="console">
             <div className="console-header">Console</div>
-            {this.state.test}
+            {this.state.output}
           </div>
         </header>
       </div>
