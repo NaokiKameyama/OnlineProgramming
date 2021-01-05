@@ -11,9 +11,11 @@ class App extends Component{
   constructor(props) {
     super(props);
     this.state = {
+      value: 'vvv',
       code: ''
     };
     this.run = this.run.bind(this);
+    this.getAnswer = this.getAnswer.bind(this);
     this.onChange = this.onChange.bind(this);
   }
 
@@ -35,6 +37,14 @@ class App extends Component{
         // const sample_str = this.stdout.replace(/\r?\n/g, '<br/>')
         this.setState({test: this.stdout});
       })
+  }
+
+  getAnswer(){
+    axios.get('http://localhost:5000/get_answer')
+    .then(res => {
+      console.log(res.data.question)
+      this.setState({value: res.data.question});
+    })
   }
 
   render() {
@@ -60,6 +70,9 @@ class App extends Component{
           </div>
           <Button className="run-button" variant="outlined" color="primary" onClick={this.run}>
             run😎
+          </Button>
+          <Button className="run-button" variant="outlined" color="primary" onClick={this.getAnswer}>
+            answer😎
           </Button>
           <div className="console">
             <div className="console-header">Console</div>

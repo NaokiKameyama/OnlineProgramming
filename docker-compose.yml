@@ -1,0 +1,24 @@
+version: '3'
+services:
+  db:
+    hostname: online_programming-db
+    build: ./postgres/.
+    ports:
+      - 5433:5432
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+    volumes:
+        - ./postgres/.:/tmp/
+    tty: true
+    stdin_open: true
+  express:      
+    container_name: express
+    image: express
+    build: ./express/myapp/.
+    ports:
+      - 5000:3000
+    volumes:
+      - ./express/myapp/.:/app
+    privileged: true
+    tty: true

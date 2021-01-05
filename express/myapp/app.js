@@ -1,5 +1,6 @@
 const express = require('express')
 const bodyParser = require('body-parser')
+var { Client } = require('pg');
 const app = express()
 const port = 3000
 
@@ -60,29 +61,21 @@ app.post('/run', (req, res) => {
   });
 });
 
-
-// app.get('/test', (req, res) => {
-//   const createCmd = "docker run -d -t golang:latest"
-//   const containerId =  execSync(createCmd).toString().substr(0, 12);
-//   console.log(containerId)
-
-//   const exec = require('child_process').exec;
-//   const cpCmd = `docker cp ./hello.go ${containerId}:/root/`
-//   exec(cpCmd, (err, stdout, stderr) => {
-//     if(err) { console.log(err); }
-//     console.log(stdout);
-//   });
-
-//   const runCmd = `docker exec ${containerId} go run /root/hello.go`
-//   // const runCmd = `docker exec ${containerId} echo "aaa"`
-//   exec(runCmd, (err, stdout, stderr) => {
-//     if (err) { console.log(err); }
-//     console.log(stdout);
-//     const removeCmd = `docker rm -f ${containerId}`
-//     execSync(removeCmd)
-//     res.send(stdout)
-//   });
-// })
+app.get('/get_answer', (req, res) => {
+  // postgresqlに接続するためのクライアント
+  const client = new Client({
+    user: 'admin',
+    host: 'online_programming-db',
+    database: 'testdb',
+    password: 'admin',
+    port: 5432
+  })
+  client.connect()
+  .then(() => client.query("select * from gquestions WHERE questionnumber=16"))
+  .then(results => res.send(results.rows[0]))
+  .catch((e => console.log(e)))
+  .finally((() => client.end()))
+});
 
 
 app.listen(port, () => {
