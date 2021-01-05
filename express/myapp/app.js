@@ -61,7 +61,7 @@ app.post('/run', (req, res) => {
   });
 });
 
-app.get('/get_answer/', (req, res) => {
+app.get('/get_answer/', async (req, res) => {
   // postgresqlに接続するためのクライアント
   const client = new Client({
     user: 'admin',
@@ -70,11 +70,10 @@ app.get('/get_answer/', (req, res) => {
     password: 'admin',
     port: 5432
   })
-  client.connect()
-  .then(() => client.query(`select * from gquestions WHERE questionnumber=${req.query.lessun_id}`))
-  .then(results => res.send(results.rows[0]))
-  .catch((e => console.log(e)))
-  .finally((() => client.end()))
+  await client.connect()
+  const results = await client.query(`select * from gquestions WHERE questionnumber=${req.query.lessun_id}`)
+  client.end()
+  res.send(results.rows[0])
 });
 
 
