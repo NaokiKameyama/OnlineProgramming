@@ -12,7 +12,8 @@ class App extends Component{
     this.state = {
       output: '',
       value: '',
-      code: ''
+      code: '',
+      answerCode: '',
     };
     this.run = this.run.bind(this);
     this.getAnswer = this.getAnswer.bind(this);
@@ -25,14 +26,17 @@ class App extends Component{
 
   async run(){
     const { data: { stdout, stderr } } = await axios.post('http://localhost:5000/run', {code: this.state.code})
+    const { data : {answer_output} } = await axios.get('http://localhost:5000/get_answer/1/1/2')
+    const check = (stdout + stderr).replace(/\r?\n/g,'') === answer_output.replace(/\r?\n/g,'')
     this.setState({output: stdout + stderr});
+    ( check ) ? alert("正解") : alert("不正解")
   }
 
   async getAnswer(){
-    const { data: { question } } = await axios.get('http://localhost:5000/get_answer', { 
-      params:{lessun_id:16} 
-    })
-    console.log(question)
+    const { data : {answer_script, answer_output} } = await axios.get('http://localhost:5000/get_answer/1/1/2')
+    console.log(answer_script)
+    console.log(answer_output)
+    return answer_output
   }
 
   render() {

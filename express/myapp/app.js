@@ -61,17 +61,20 @@ app.post('/run', (req, res) => {
   });
 });
 
-app.get('/get_answer/', async (req, res) => {
+app.get('/get_answer/:category_id/:theme_id/:lessun_id', async (req, res) => {
   // postgresqlに接続するためのクライアント
   const client = new Client({
     user: 'admin',
     host: 'online_programming-db',
-    database: 'testdb',
+    database: 'postgres',
     password: 'admin',
     port: 5432
   })
   await client.connect()
-  const results = await client.query(`select * from gquestions WHERE questionnumber=${req.query.lessun_id}`)
+  const results = await client.query(`select * from lessun WHERE 
+    category_id=${req.params.category_id} AND
+    theme_id=${req.params.theme_id} AND
+    lessun_id=${req.params.lessun_id}`)
   client.end()
   res.send(results.rows[0])
 });
@@ -81,3 +84,12 @@ app.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`)
 })
 
+// CREATE TABLE lessun (
+//   category_id int,
+//   theme_id int,
+//   lessun_id int,
+//   question_sentence text,
+//   answer_output text,
+//   answer_script text,
+//   isPremium boolean
+// );
