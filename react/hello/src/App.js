@@ -31,9 +31,13 @@ class App extends Component{
     const {data: answer_output }= await axios.get('http://localhost:5000/get_answer_output/1/1/2')
     console.log(`実行結果:\n${stdout+stderr}`);
     console.log(`答え:\n${answer_output}`);
-    const check = (stdout + stderr).replace(/\r?\n/g,'') === answer_output.replace(/\r?\n/g,'')
+    const check = (stdout + stderr).replace(/\r?\n/g,'') === answer_output.replace(/\r?\n/g,'');
     this.setState({output: stdout + stderr});
-    ( check ) ? alert("正解") : alert("不正解")
+    axios.post('http://localhost:5000/update_lessun_status/1/1/2', {
+      runResult: check,
+      userId: "user01"
+    });
+    ( check ) ? alert("正解") : alert("不正解");
   }
 
   async getAnswerScript(){

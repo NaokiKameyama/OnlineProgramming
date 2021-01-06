@@ -127,6 +127,21 @@ app.get('/get_is_premium/:category_id/:theme_id/:lessun_id', async (req, res) =>
   res.send(results.rows[0].ispremium)
 })
 
+// コード実行結果をlessun_statusテーブルにUPSERTする
+app.post('/update_lessun_status/:category_id/:theme_id/:lessun_id', async (req, res) => {
+  console.log("update_lessun_status apiの実行")
+  const client = new Client(postgresConnectionInfo)
+  await client.connect()
+  const abc = 
+  `insert into lessun_status (user_id, category_id, theme_id, lessun_id, result, created_at, updated_at)
+  VALUES ('${req.body.userId}', ${req.params.category_id}, ${req.params.theme_id}, ${req.params. lessun_id}, TRUE, current_timestamp, current_timestamp)
+  on conflict (user_id, category_id, theme_id, lessun_id)
+  do update set result=${req.body.runResult}, updated_at=current_timestamp;`
+  await client.query(abc)
+  client.end()
+  res.send("hello")
+})
+
 // =====================================
 
 
