@@ -100,7 +100,7 @@ COPY public.lessun (category_id, theme_id, lessun_id, question_sentence, answer_
 
 COPY public.lessun_status (id, user_id, category_id, theme_id, lessun_id, result, created_at, updated_at) FROM stdin;
 1	user01	1	1	1	t	2021-01-06 16:02:47.060314	2021-01-06 16:03:24.735515
-4	user01	1	1	2	t	2021-01-06 16:04:09.677912	2021-01-06 16:24:46.122076
+4	user01	1	1	2	f	2021-01-06 16:04:09.677912	2021-01-06 18:08:16.734812
 \.
 
 
@@ -108,7 +108,7 @@ COPY public.lessun_status (id, user_id, category_id, theme_id, lessun_id, result
 -- Name: lessun_status_id_seq; Type: SEQUENCE SET; Schema: public; Owner: admin
 --
 
-SELECT pg_catalog.setval('public.lessun_status_id_seq', 11, true);
+SELECT pg_catalog.setval('public.lessun_status_id_seq', 18, true);
 
 
 --

@@ -5,6 +5,8 @@ import AceEditor from "react-ace";
 import "ace-builds/src-noconflict/mode-golang";
 import "ace-builds/src-noconflict/theme-monokai";
 import Button from '@material-ui/core/Button';
+import firebase from './firebase'
+import SignInScreen from './components/SignInScreen';
 
 class App extends Component{
   constructor(props) {
@@ -16,12 +18,33 @@ class App extends Component{
       value: '',
       code: '',
       answerCode: '',
+      loading: true,
+      user: null
     };
     this.run = this.run.bind(this);
     this.getAnswerScript = this.getAnswerScript.bind(this);
     this.getQuestionSentence = this.getQuestionSentence.bind(this);
     this.getIsPremium = this.getIsPremium.bind(this);
     this.onChange = this.onChange.bind(this);
+  }
+
+  componentDidMount() {
+    firebase.auth().onAuthStateChanged(user => {
+      this.setState({
+        loading: false,
+        user: user
+      });
+    });
+  }
+
+
+  login() {
+    const provider = new firebase.auth.GoogleAuthProvider()
+    firebase.auth().signInWithRedirect(provider)
+  }
+  //signInWithRedirectでGoogleのログインページに接続して、Google プロバイダ オブジェクトのインスタンスを作成する。
+  logout() {
+    firebase.auth().signOut();
   }
 
   onChange(value) {
@@ -61,9 +84,19 @@ class App extends Component{
   }
 
   render() {
+    if (this.state.loading) return <div>loading</div>;
     return (
       <div className="App">
         <header className="App-header">
+        {/* ログイン機能の参考ページ：　https://qiita.com/cola119/items/99350f2c34c51378777e */}
+          <div>
+            Username: {this.state.user && this.state.user.displayName}
+            <br />
+            {this.state.user ?
+              (<button onClick={this.logout}>Logout</button>) :
+              (<SignInScreen />)
+            }
+          </div>
           <div className="editor">
             <div className="editor-header">Editor</div>
             <AceEditor
