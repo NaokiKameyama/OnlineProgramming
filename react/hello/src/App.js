@@ -10,6 +10,8 @@ class App extends Component{
   constructor(props) {
     super(props);
     this.state = {
+      domain: 'http://localhost',
+      port: '5000',
       output: '',
       value: '',
       code: '',
@@ -27,13 +29,13 @@ class App extends Component{
   }
 
   async run(){
-    const { data: { stdout, stderr } } = await axios.post('http://localhost:5000/run', {code: this.state.code})
-    const {data: answer_output }= await axios.get('http://localhost:5000/get_answer_output/1/1/2')
+    const { data: { stdout, stderr } } = await axios.post(`${this.state.domain}:${this.state.port}/run`, {code: this.state.code})
+    const {data: answer_output }= await axios.get(`${this.state.domain}:${this.state.port}/get_answer_output/1/1/2`)
     console.log(`実行結果:\n${stdout+stderr}`);
     console.log(`答え:\n${answer_output}`);
     const check = (stdout + stderr).replace(/\r?\n/g,'') === answer_output.replace(/\r?\n/g,'');
     this.setState({output: stdout + stderr});
-    axios.post('http://localhost:5000/update_lessun_status/1/1/2', {
+    axios.post(`${this.state.domain}:${this.state.port}/update_lessun_status/1/1/2`, {
       runResult: check,
       userId: "user01"
     });
@@ -41,19 +43,19 @@ class App extends Component{
   }
 
   async getAnswerScript(){
-    const { data : answer_script } = await axios.get('http://localhost:5000/get_answer_script/1/1/2')
+    const { data : answer_script } = await axios.get(`${this.state.domain}:${this.state.port}/get_answer_script/1/1/2`)
     console.log(answer_script)
     return answer_script
   }
 
   async getQuestionSentence() {
-    const { data: question_sentence } = await axios.get('http://localhost:5000/get_question_sentence/1/1/2')
+    const { data: question_sentence } = await axios.get(`${this.state.domain}:${this.state.port}/get_question_sentence/1/1/2`)
     console.log(question_sentence)
     return question_sentence
   }
 
   async getIsPremium() {
-    const { data: ispremium } = await axios.get('http://localhost:5000/get_is_premium/1/1/2')
+    const { data: ispremium } = await axios.get(`${this.state.domain}:${this.state.port}/get_is_premium/1/1/2`)
     console.log(ispremium)
     return ispremium
   }
