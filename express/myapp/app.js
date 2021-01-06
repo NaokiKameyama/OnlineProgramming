@@ -1,28 +1,41 @@
 const express = require('express')
 const bodyParser = require('body-parser')
 var { Client } = require('pg');
+
+// ===============事前定義===============
 const app = express()
 const port = 3000
-
 // CORSを許可する
 app.use(function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
   next();
 });
-
 // メッセージをパースする
 app.use(bodyParser.urlencoded({
   extended: true
 }));
 app.use(bodyParser.json());
 
+// Express起動時にgolangイメージを取得
 const execSync = require('child_process').execSync
 const pullCmd = "docker pull golang"
 execSync(pullCmd).toString()
 
+const postgresConnectionInfo = {
+  user: 'admin',
+  host: 'online_programming-db',
+  database: 'postgres',
+  password: 'admin',
+  port: 5432
+};
+// =====================================
+
+
+// ===============API===============
+// ソースコードの実行結果を返却するAPI
 app.post('/run', (req, res) => {
-  console.log("run実行")
+  console.log("run apiの実行")
   console.log(req.body);
 
   const fs = require('fs');
@@ -61,35 +74,62 @@ app.post('/run', (req, res) => {
   });
 });
 
-app.get('/get_answer/:category_id/:theme_id/:lessun_id', async (req, res) => {
+// カテゴリーID, テーマID, レッスンIDの値に一致する実行結果の答えを返却するAPI
+app.get('/get_answer_output/:category_id/:theme_id/:lessun_id', async (req, res) => {
+  console.log("get_answer_output apiの実行")
   // postgresqlに接続するためのクライアント
-  const client = new Client({
-    user: 'admin',
-    host: 'online_programming-db',
-    database: 'postgres',
-    password: 'admin',
-    port: 5432
-  })
+  const client = new Client(postgresConnectionInfo)
   await client.connect()
-  const results = await client.query(`select * from lessun WHERE 
+  const results = await client.query(`select answer_output from lessun WHERE 
     category_id=${req.params.category_id} AND
     theme_id=${req.params.theme_id} AND
     lessun_id=${req.params.lessun_id}`)
   client.end()
-  res.send(results.rows[0])
+  res.send(results.rows[0].answer_output)
 });
+
+// カテゴリーID, テーマID, レッスンIDの値に一致するソースコードの答えを返却するAPI
+app.get('/get_answer_script/:category_id/:theme_id/:lessun_id', async (req, res) => {
+  console.log("get_answer_script apiの実行")
+  const client = new Client(postgresConnectionInfo)
+  await client.connect()
+  const results = await client.query(`select answer_script from lessun WHERE 
+    category_id=${req.params.category_id} AND
+    theme_id=${req.params.theme_id} AND
+    lessun_id=${req.params.lessun_id}`)
+  client.end()
+  res.send(results.rows[0].answer_script)
+})
+
+// カテゴリーID, テーマID, レッスンIDの値に一致する問題文を返却するAPI
+app.get('/get_question_sentence/:category_id/:theme_id/:lessun_id', async (req, res) => {
+  console.log("get_question_sentence apiの実行")
+  const client = new Client(postgresConnectionInfo)
+  await client.connect()
+  const results = await client.query(`select question_sentence from lessun WHERE 
+    category_id=${req.params.category_id} AND
+    theme_id=${req.params.theme_id} AND
+    lessun_id=${req.params.lessun_id}`)
+  client.end()
+  res.send(results.rows[0].question_sentence)
+})
+
+// カテゴリーID, テーマID, レッスンIDの値に一致するレッスンが有料(true)か無料(false)かを返却
+app.get('/get_is_premium/:category_id/:theme_id/:lessun_id', async (req, res) => {
+  console.log("get_is_premium apiの実行")
+  const client = new Client(postgresConnectionInfo)
+  await client.connect()
+  const results = await client.query(`select ispremium from lessun WHERE 
+    category_id=${req.params.category_id} AND
+    theme_id=${req.params.theme_id} AND
+    lessun_id=${req.params.lessun_id}`)
+  client.end()
+  res.send(results.rows[0].ispremium)
+})
+
+// =====================================
 
 
 app.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`)
 })
-
-// CREATE TABLE lessun (
-//   category_id int,
-//   theme_id int,
-//   lessun_id int,
-//   question_sentence text,
-//   answer_output text,
-//   answer_script text,
-//   isPremium boolean
-// );

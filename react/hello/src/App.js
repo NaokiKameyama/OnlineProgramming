@@ -16,7 +16,9 @@ class App extends Component{
       answerCode: '',
     };
     this.run = this.run.bind(this);
-    this.getAnswer = this.getAnswer.bind(this);
+    this.getAnswerScript = this.getAnswerScript.bind(this);
+    this.getQuestionSentence = this.getQuestionSentence.bind(this);
+    this.getIsPremium = this.getIsPremium.bind(this);
     this.onChange = this.onChange.bind(this);
   }
 
@@ -26,17 +28,30 @@ class App extends Component{
 
   async run(){
     const { data: { stdout, stderr } } = await axios.post('http://localhost:5000/run', {code: this.state.code})
-    const { data : {answer_output} } = await axios.get('http://localhost:5000/get_answer/1/1/2')
+    const {data: answer_output }= await axios.get('http://localhost:5000/get_answer_output/1/1/2')
+    console.log(`実行結果:\n${stdout+stderr}`);
+    console.log(`答え:\n${answer_output}`);
     const check = (stdout + stderr).replace(/\r?\n/g,'') === answer_output.replace(/\r?\n/g,'')
     this.setState({output: stdout + stderr});
     ( check ) ? alert("正解") : alert("不正解")
   }
 
-  async getAnswer(){
-    const { data : {answer_script, answer_output} } = await axios.get('http://localhost:5000/get_answer/1/1/2')
+  async getAnswerScript(){
+    const { data : answer_script } = await axios.get('http://localhost:5000/get_answer_script/1/1/2')
     console.log(answer_script)
-    console.log(answer_output)
-    return answer_output
+    return answer_script
+  }
+
+  async getQuestionSentence() {
+    const { data: question_sentence } = await axios.get('http://localhost:5000/get_question_sentence/1/1/2')
+    console.log(question_sentence)
+    return question_sentence
+  }
+
+  async getIsPremium() {
+    const { data: ispremium } = await axios.get('http://localhost:5000/get_is_premium/1/1/2')
+    console.log(ispremium)
+    return ispremium
   }
 
   render() {
@@ -61,10 +76,16 @@ class App extends Component{
             />
           </div>
           <Button className="run-button" variant="outlined" color="primary" onClick={this.run}>
-            run😎
+            run
           </Button>
-          <Button className="run-button" variant="outlined" color="primary" onClick={this.getAnswer}>
-            answer😎
+          <Button className="run-button" variant="outlined" color="primary" onClick={this.getAnswerScript}>
+            getgetAnswerScript
+          </Button>
+          <Button className="run-button" variant="outlined" color="primary" onClick={this.getQuestionSentence}>
+            getQuestionSentence
+          </Button>
+          <Button className="run-button" variant="outlined" color="primary" onClick={this.getIsPremium}>
+            getIsPremium
           </Button>
           <div className="console">
             <div className="console-header">Console</div>
