@@ -78,10 +78,58 @@ ALTER SEQUENCE public.lessun_status_id_seq OWNED BY public.lessun_status.id;
 
 
 --
+-- Name: user; Type: TABLE; Schema: public; Owner: admin
+--
+
+CREATE TABLE public."user" (
+    id integer NOT NULL,
+    user_id text,
+    email text,
+    displayname text,
+    photourl text,
+    subscription_id text,
+    subscription_status text,
+    created_at timestamp without time zone,
+    updated_at timestamp without time zone
+);
+
+
+ALTER TABLE public."user" OWNER TO admin;
+
+--
+-- Name: user_id_seq; Type: SEQUENCE; Schema: public; Owner: admin
+--
+
+CREATE SEQUENCE public.user_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.user_id_seq OWNER TO admin;
+
+--
+-- Name: user_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: admin
+--
+
+ALTER SEQUENCE public.user_id_seq OWNED BY public."user".id;
+
+
+--
 -- Name: lessun_status id; Type: DEFAULT; Schema: public; Owner: admin
 --
 
 ALTER TABLE ONLY public.lessun_status ALTER COLUMN id SET DEFAULT nextval('public.lessun_status_id_seq'::regclass);
+
+
+--
+-- Name: user id; Type: DEFAULT; Schema: public; Owner: admin
+--
+
+ALTER TABLE ONLY public."user" ALTER COLUMN id SET DEFAULT nextval('public.user_id_seq'::regclass);
 
 
 --
@@ -100,7 +148,17 @@ COPY public.lessun (category_id, theme_id, lessun_id, question_sentence, answer_
 
 COPY public.lessun_status (id, user_id, category_id, theme_id, lessun_id, result, created_at, updated_at) FROM stdin;
 1	user01	1	1	1	t	2021-01-06 16:02:47.060314	2021-01-06 16:03:24.735515
-4	user01	1	1	2	f	2021-01-06 16:04:09.677912	2021-01-06 18:08:16.734812
+4	user01	1	1	2	f	2021-01-06 16:04:09.677912	2021-01-07 14:11:02.448608
+\.
+
+
+--
+-- Data for Name: user; Type: TABLE DATA; Schema: public; Owner: admin
+--
+
+COPY public."user" (id, user_id, email, displayname, photourl, subscription_id, subscription_status, created_at, updated_at) FROM stdin;
+4	9vHMOPvHJTZTJ9lKrPsMaE3Bnvv1	js.pro98016@gmail.com	JS- Pro.	https://lh4.googleusercontent.com/-yrvJbZZ3spM/AAAAAAAAAAI/AAAAAAAAAAA/AMZuuckHVqo6CRf05lJzGlAdM770hGPPDQ/s96-c/photo.jpg	\N	\N	2021-01-07 14:15:22.758321	2021-01-07 14:15:23.598432
+1	oO9kr84U5wfTJ9j23IiGVbQoUFU2	atukan0930@gmail.com	亀山直起	https://lh3.googleusercontent.com/a-/AOh14GiWAhaarf3jQ7DBPdvoGFA0NgpG7HwF7aG_YOEfrg=s96-c	\N	\N	2021-01-07 14:14:31.694166	2021-01-07 14:17:40.107923
 \.
 
 
@@ -108,7 +166,14 @@ COPY public.lessun_status (id, user_id, category_id, theme_id, lessun_id, result
 -- Name: lessun_status_id_seq; Type: SEQUENCE SET; Schema: public; Owner: admin
 --
 
-SELECT pg_catalog.setval('public.lessun_status_id_seq', 18, true);
+SELECT pg_catalog.setval('public.lessun_status_id_seq', 22, true);
+
+
+--
+-- Name: user_id_seq; Type: SEQUENCE SET; Schema: public; Owner: admin
+--
+
+SELECT pg_catalog.setval('public.user_id_seq', 8, true);
 
 
 --
@@ -117,6 +182,14 @@ SELECT pg_catalog.setval('public.lessun_status_id_seq', 18, true);
 
 ALTER TABLE ONLY public.lessun_status
     ADD CONSTRAINT lessun_status_unique UNIQUE (user_id, category_id, theme_id, lessun_id);
+
+
+--
+-- Name: user user_unique; Type: CONSTRAINT; Schema: public; Owner: admin
+--
+
+ALTER TABLE ONLY public."user"
+    ADD CONSTRAINT user_unique UNIQUE (user_id);
 
 
 --

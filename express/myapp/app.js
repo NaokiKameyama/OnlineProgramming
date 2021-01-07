@@ -18,7 +18,9 @@ app.use(bodyParser.urlencoded({
 app.use(bodyParser.json());
 
 // Express起動時にgolangイメージを取得
-const execSync = require('child_process').execSync
+const execSync = require('child_process').execSync;
+const { text } = require('body-parser');
+const { timeStamp } = require('console');
 const pullCmd = "docker pull golang"
 execSync(pullCmd).toString()
 
@@ -132,14 +134,43 @@ app.post('/update_lessun_status/:category_id/:theme_id/:lessun_id', async (req, 
   console.log("update_lessun_status apiの実行")
   const client = new Client(postgresConnectionInfo)
   await client.connect()
-  const abc = 
+  const sqlCmd = 
   `insert into lessun_status (user_id, category_id, theme_id, lessun_id, result, created_at, updated_at)
-  VALUES ('${req.body.userId}', ${req.params.category_id}, ${req.params.theme_id}, ${req.params. lessun_id}, TRUE, current_timestamp, current_timestamp)
+  VALUES (
+    '${req.body.userId}',
+    ${req.params.category_id},
+    ${req.params.theme_id},
+    ${req.params. lessun_id},
+    TRUE,
+    current_timestamp,
+    current_timestamp
+    )
   on conflict (user_id, category_id, theme_id, lessun_id)
   do update set result=${req.body.runResult}, updated_at=current_timestamp;`
-  await client.query(abc)
+  await client.query(sqlCmd)
   client.end()
-  res.send("hello")
+})
+
+// ログインしたユーザーの情報をテーブルにUPSERTする
+app.post('/login', async (req, res) => {
+  console.log("login apiの実行")
+  const { displayName, email, photoURL, emailVerified, uid} = req.body
+  const client = new Client(postgresConnectionInfo);
+  await client.connect();
+  const sqlCmd = 
+  `insert into public.user (user_id, email, displayName, photoURL, created_at, updated_at)
+  VALUES (
+    '${uid}',
+    '${email}',
+    '${displayName}',
+    '${photoURL}',
+    current_timestamp,
+    current_timestamp
+    )
+  on conflict (user_id)
+  do update set updated_at=current_timestamp;`
+  await client.query(sqlCmd);
+  client.end();
 })
 
 // =====================================
@@ -148,3 +179,24 @@ app.post('/update_lessun_status/:category_id/:theme_id/:lessun_id', async (req, 
 app.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`)
 })
+
+
+
+
+// CREATE TABLE user (
+//   id SERIAL,
+//   user_id text,
+//   email text,
+//   displayName text,
+//   photoURL text,
+//   subscription_id text,
+//   subscription_status text,
+//   created_at timestamp,
+//   updated_at timestamp,
+//   constraint user_unique unique (user_id)
+// );
+
+// insert into user (user_id, email, displayName, photoURL, created_at, updated_at)
+//   VALUES ('test', 'test', 'test', 'test', current_timestamp, current_timestamp)
+//   on conflict (user_id)
+//   do update set updated_at=current_timestamp;

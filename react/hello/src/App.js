@@ -30,6 +30,17 @@ class App extends Component{
 
   componentDidMount() {
     firebase.auth().onAuthStateChanged(user => {
+      if (user) {
+        const { displayName, email, photoURL, emailVerified, uid} = user
+        console.log(displayName);
+        console.log(email);
+        console.log(photoURL);
+        console.log(emailVerified);
+        console.log(uid);
+        axios.post(`${this.state.domain}:${this.state.port}/login`,user);
+      } else {
+        console.log("user is null")
+      }
       this.setState({
         loading: false,
         user: user
@@ -37,11 +48,6 @@ class App extends Component{
     });
   }
 
-
-  login() {
-    const provider = new firebase.auth.GoogleAuthProvider()
-    firebase.auth().signInWithRedirect(provider)
-  }
   //signInWithRedirectでGoogleのログインページに接続して、Google プロバイダ オブジェクトのインスタンスを作成する。
   logout() {
     firebase.auth().signOut();
