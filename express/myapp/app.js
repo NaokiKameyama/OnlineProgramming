@@ -183,8 +183,8 @@ app.listen(port, () => {
 
 
 
-// CREATE TABLE user (
-//   id SERIAL,
+// CREATE TABLE public.user(
+//   id SERIAL NOT NULL PRIMARY KEY,
 //   user_id text,
 //   email text,
 //   displayName text,
