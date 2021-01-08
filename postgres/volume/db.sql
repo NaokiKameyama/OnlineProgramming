@@ -25,6 +25,7 @@ SET default_with_oids = false;
 --
 
 CREATE TABLE public.lessun (
+    id integer NOT NULL,
     category_id integer,
     theme_id integer,
     lessun_id integer,
@@ -36,6 +37,28 @@ CREATE TABLE public.lessun (
 
 
 ALTER TABLE public.lessun OWNER TO admin;
+
+--
+-- Name: lessun_id_seq; Type: SEQUENCE; Schema: public; Owner: admin
+--
+
+CREATE SEQUENCE public.lessun_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.lessun_id_seq OWNER TO admin;
+
+--
+-- Name: lessun_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: admin
+--
+
+ALTER SEQUENCE public.lessun_id_seq OWNED BY public.lessun.id;
+
 
 --
 -- Name: lessun_status; Type: TABLE; Schema: public; Owner: admin
@@ -119,6 +142,13 @@ ALTER SEQUENCE public.user_id_seq OWNED BY public."user".id;
 
 
 --
+-- Name: lessun id; Type: DEFAULT; Schema: public; Owner: admin
+--
+
+ALTER TABLE ONLY public.lessun ALTER COLUMN id SET DEFAULT nextval('public.lessun_id_seq'::regclass);
+
+
+--
 -- Name: lessun_status id; Type: DEFAULT; Schema: public; Owner: admin
 --
 
@@ -136,9 +166,9 @@ ALTER TABLE ONLY public."user" ALTER COLUMN id SET DEFAULT nextval('public.user_
 -- Data for Name: lessun; Type: TABLE DATA; Schema: public; Owner: admin
 --
 
-COPY public.lessun (category_id, theme_id, lessun_id, question_sentence, answer_output, answer_script, ispremium) FROM stdin;
-1	1	1	hello worldを出力してみよう！	hello world	package main\n\nimport "fmt"\n\nfunc main() {\n  fmt.Printf("hello world")\n}	f
-1	1	2	for文を実行してみよう！	0\n1\n2\n3\n4\n赤\n黄\n青	package main\nimport "fmt"\n\nfunc main(){\n\tfor i := 0; i < 5; i++ {\n\t\t\tfmt.Println(i) // 0 1 2 3 4が出力される\n\t}\n\n\tcolor1 := []string{"赤","黄","青"}\n\tfor i := 0; i < len(color1); i++ {\n\t\tfmt.Println(color1[i]) // 赤 黄 青が出力される\n\t}\n}	f
+COPY public.lessun (id, category_id, theme_id, lessun_id, question_sentence, answer_output, answer_script, ispremium) FROM stdin;
+1	1	1	1	hello worldを出力してみよう！	hello world	package main\n\nimport "fmt"\n\nfunc main() {\n  fmt.Printf("hello world")\n}	f
+2	1	1	2	for文を実行してみよう！	0\n1\n2\n3\n4\n赤\n黄\n青	package main\nimport "fmt"\n\nfunc main(){\n\tfor i := 0; i < 5; i++ {\n\t\t\tfmt.Println(i) // 0 1 2 3 4が出力される\n\t}\n\n\tcolor1 := []string{"赤","黄","青"}\n\tfor i := 0; i < len(color1); i++ {\n\t\tfmt.Println(color1[i]) // 赤 黄 青が出力される\n\t}\n}	f
 \.
 
 
@@ -148,7 +178,7 @@ COPY public.lessun (category_id, theme_id, lessun_id, question_sentence, answer_
 
 COPY public.lessun_status (id, user_id, category_id, theme_id, lessun_id, result, created_at, updated_at) FROM stdin;
 1	user01	1	1	1	t	2021-01-06 16:02:47.060314	2021-01-06 16:03:24.735515
-4	user01	1	1	2	f	2021-01-06 16:04:09.677912	2021-01-07 14:11:02.448608
+4	user01	1	1	2	t	2021-01-06 16:04:09.677912	2021-01-07 15:20:49.205899
 \.
 
 
@@ -157,23 +187,38 @@ COPY public.lessun_status (id, user_id, category_id, theme_id, lessun_id, result
 --
 
 COPY public."user" (id, user_id, email, displayname, photourl, subscription_id, subscription_status, created_at, updated_at) FROM stdin;
-4	9vHMOPvHJTZTJ9lKrPsMaE3Bnvv1	js.pro98016@gmail.com	JS- Pro.	https://lh4.googleusercontent.com/-yrvJbZZ3spM/AAAAAAAAAAI/AAAAAAAAAAA/AMZuuckHVqo6CRf05lJzGlAdM770hGPPDQ/s96-c/photo.jpg	\N	\N	2021-01-07 14:15:22.758321	2021-01-07 14:15:23.598432
-1	oO9kr84U5wfTJ9j23IiGVbQoUFU2	atukan0930@gmail.com	亀山直起	https://lh3.googleusercontent.com/a-/AOh14GiWAhaarf3jQ7DBPdvoGFA0NgpG7HwF7aG_YOEfrg=s96-c	\N	\N	2021-01-07 14:14:31.694166	2021-01-07 14:17:40.107923
+1	oO9kr84U5wfTJ9j23IiGVbQoUFU2	atukan0930@gmail.com	亀山直起	https://lh3.googleusercontent.com/a-/AOh14GiWAhaarf3jQ7DBPdvoGFA0NgpG7HwF7aG_YOEfrg=s96-c	\N	\N	2021-01-07 16:24:05.1057	2021-01-07 16:24:05.855866
+3	9vHMOPvHJTZTJ9lKrPsMaE3Bnvv1	js.pro98016@gmail.com	JS- Pro.	https://lh4.googleusercontent.com/-yrvJbZZ3spM/AAAAAAAAAAI/AAAAAAAAAAA/AMZuuckHVqo6CRf05lJzGlAdM770hGPPDQ/s96-c/photo.jpg	\N	\N	2021-01-07 16:24:17.762927	2021-01-08 04:42:50.740751
 \.
+
+
+--
+-- Name: lessun_id_seq; Type: SEQUENCE SET; Schema: public; Owner: admin
+--
+
+SELECT pg_catalog.setval('public.lessun_id_seq', 2, true);
 
 
 --
 -- Name: lessun_status_id_seq; Type: SEQUENCE SET; Schema: public; Owner: admin
 --
 
-SELECT pg_catalog.setval('public.lessun_status_id_seq', 22, true);
+SELECT pg_catalog.setval('public.lessun_status_id_seq', 26, true);
 
 
 --
 -- Name: user_id_seq; Type: SEQUENCE SET; Schema: public; Owner: admin
 --
 
-SELECT pg_catalog.setval('public.user_id_seq', 8, true);
+SELECT pg_catalog.setval('public.user_id_seq', 6, true);
+
+
+--
+-- Name: lessun lessun_pkey; Type: CONSTRAINT; Schema: public; Owner: admin
+--
+
+ALTER TABLE ONLY public.lessun
+    ADD CONSTRAINT lessun_pkey PRIMARY KEY (id);
 
 
 --
@@ -182,6 +227,14 @@ SELECT pg_catalog.setval('public.user_id_seq', 8, true);
 
 ALTER TABLE ONLY public.lessun_status
     ADD CONSTRAINT lessun_status_unique UNIQUE (user_id, category_id, theme_id, lessun_id);
+
+
+--
+-- Name: user user_pkey; Type: CONSTRAINT; Schema: public; Owner: admin
+--
+
+ALTER TABLE ONLY public."user"
+    ADD CONSTRAINT user_pkey PRIMARY KEY (id);
 
 
 --

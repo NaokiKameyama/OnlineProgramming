@@ -200,3 +200,15 @@ app.listen(port, () => {
 //   VALUES ('test', 'test', 'test', 'test', current_timestamp, current_timestamp)
 //   on conflict (user_id)
 //   do update set updated_at=current_timestamp;
+
+
+// CREATE TABLE lessun (
+//   id serial PRIMARY KEY,
+//   category_id integer,
+//   theme_id integer,
+//   lessun_id integer,
+//   question_sentence text,
+//   answer_output text,
+//   answer_script text,
+//   ispremium boolean
+// );
